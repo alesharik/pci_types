@@ -126,3 +126,193 @@ impl Debug for StatusRegister {
             .finish()
     }
 }
+
+#[derive(Clone, Eq, PartialEq, Default)]
+pub struct CommandRegister(u16);
+
+impl CommandRegister {
+    pub(crate) fn from_u16(data: u16) -> CommandRegister {
+        CommandRegister(data)
+    }
+
+    pub(crate) fn write_info(&self, data: &mut u32) {
+        data.set_bits(8..=10, self.0.get_bits(8..=10) as u32);
+        data.set_bits(0..=6, self.0.get_bits(0..=6) as u32);
+    }
+
+    pub fn builder(&self) -> CommandRegisterBuilder {
+        CommandRegisterBuilder(self.0)
+    }
+
+    /// If `true` the assertion of the devices INTx# signal is disabled;
+    /// otherwise, assertion of the signal is enabled.
+    pub fn interrupts_disabled(&self) -> bool {
+        self.0.get_bit(10)
+    }
+
+    /// If `true` indicates a device is allowed to generate fast back-to-back transactions;
+    /// otherwise, fast back-to-back transactions are only allowed to the same agent.
+    pub fn fast_back_to_back_enabled(&self) -> bool {
+        self.0.get_bit(9)
+    }
+
+    /// If `true` the SERR# driver is enabled;
+    /// otherwise, the driver is disabled.
+    pub fn serr_enabled(&self) -> bool {
+        self.0.get_bit(8)
+    }
+
+    /// If `true` the device will take its normal action when a parity error is detected;
+    /// otherwise, when an error is detected, the device will set bit 15 of the Status register
+    /// (Detected Parity Error Status Bit), but will not assert the PERR# (Parity Error)
+    /// pin and will continue operation as normal.
+    pub fn parity_error_response(&self) -> bool {
+        self.0.get_bit(6)
+    }
+
+    /// If `true` the device does not respond to palette register writes and will snoop the data;
+    /// otherwise, the device will treat palette write accesses like all other accesses.
+    pub fn vga_palette_snoop(&self) -> bool {
+        self.0.get_bit(5)
+    }
+
+    /// If `true` the device can generate the Memory Write and Invalidate command;
+    /// otherwise, the Memory Write command must be used.
+    pub fn memory_write_and_invalidate_enabled(&self) -> bool {
+        self.0.get_bit(4)
+    }
+
+    /// If `true` the device can monitor Special Cycle operations;
+    /// otherwise, the device will ignore them.
+    pub fn monitor_special_cycles(&self) -> bool {
+        self.0.get_bit(3)
+    }
+
+    /// If `true` the device can behave as a bus master;
+    /// otherwise, the device can not generate PCI accesses.
+    pub fn bus_mastering_enabled(&self) -> bool {
+        self.0.get_bit(2)
+    }
+
+    /// If `true` the device can respond to Memory Space accesses;
+    /// otherwise, the device's response is disabled.
+    pub fn memory_space_access_enabled(&self) -> bool {
+        self.0.get_bit(1)
+    }
+
+    /// If `true` the device can respond to I/O Space accesses;
+    /// otherwise, the device's response is disabled.
+    pub fn io_space_access_enabled(&self) -> bool {
+        self.0.get_bit(0)
+    }
+}
+
+impl Debug for CommandRegister {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        f.debug_struct("CommandRegister")
+            .field("interrupts_disabled", &self.interrupts_disabled())
+            .field(
+                "fast_back_to_back_enabled",
+                &self.fast_back_to_back_enabled(),
+            )
+            .field("serr_enabled", &self.serr_enabled())
+            .field("parity_error_response", &self.parity_error_response())
+            .field("vga_palette_snoop", &self.vga_palette_snoop())
+            .field(
+                "memory_write_and_invalidate_enabled",
+                &self.memory_write_and_invalidate_enabled(),
+            )
+            .field("monitor_special_cycles", &self.monitor_special_cycles())
+            .field("bus_mastering_enabled", &self.bus_mastering_enabled())
+            .field(
+                "memory_space_access_enabled",
+                &self.memory_space_access_enabled(),
+            )
+            .field("io_space_access_enabled", &self.io_space_access_enabled())
+            .finish()
+    }
+}
+
+#[derive(Default)]
+pub struct CommandRegisterBuilder(u16);
+
+impl CommandRegisterBuilder {
+    /// If `true` the assertion of the devices INTx# signal is disabled;
+    /// otherwise, assertion of the signal is enabled.
+    pub fn interrupt_disable(&mut self, disable: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(10, disable);
+        self
+    }
+
+    /// If `true` indicates a device is allowed to generate fast back-to-back transactions;
+    /// otherwise, fast back-to-back transactions are only allowed to the same agent.
+    pub fn fast_back_to_back_enable(&mut self, enable: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(9, enable);
+        self
+    }
+
+    /// If `true` the SERR# driver is enabled;
+    /// otherwise, the driver is disabled.
+    pub fn serr_enable(&mut self, enable: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(8, enable);
+        self
+    }
+
+    /// If `true` the device will take its normal action when a parity error is detected;
+    /// otherwise, when an error is detected, the device will set bit 15 of the Status register
+    /// (Detected Parity Error Status Bit), but will not assert the PERR# (Parity Error)
+    /// pin and will continue operation as normal.
+    pub fn parity_error_response(&mut self, response: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(6, response);
+        self
+    }
+
+    /// If `true` the device does not respond to palette register writes and will snoop the data;
+    /// otherwise, the device will treat palette write accesses like all other accesses.
+    pub fn vga_palette_snoop(&mut self, snoop: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(5, snoop);
+        self
+    }
+
+    /// If `true` the device can generate the Memory Write and Invalidate command;
+    /// otherwise, the Memory Write command must be used.
+    pub fn memory_write_and_invalidate_enable(
+        &mut self,
+        enable: bool,
+    ) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(4, enable);
+        self
+    }
+
+    /// If `true` the device can monitor Special Cycle operations;
+    /// otherwise, the device will ignore them.
+    pub fn monitor_special_cycles(&mut self, cycles: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(3, cycles);
+        self
+    }
+
+    /// If `true` the device can behave as a bus master;
+    /// otherwise, the device can not generate PCI accesses.
+    pub fn bus_mastering(&mut self, mastering: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(2, mastering);
+        self
+    }
+
+    /// If `true` the device can respond to Memory Space accesses;
+    /// otherwise, the device's response is disabled.
+    pub fn memory_space_access(&mut self, access: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(1, access);
+        self
+    }
+
+    /// If `true` the device can respond to I/O Space accesses;
+    /// otherwise, the device's response is disabled.
+    pub fn io_space_access(&mut self, access: bool) -> &mut CommandRegisterBuilder {
+        self.0.set_bit(0, access);
+        self
+    }
+
+    pub fn build(self) -> CommandRegister {
+        CommandRegister(self.0)
+    }
+}

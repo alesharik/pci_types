@@ -4,7 +4,7 @@ pub mod capability;
 pub mod device_type;
 mod register;
 
-pub use register::{DevselTiming, StatusRegister};
+pub use register::{DevselTiming, StatusRegister, CommandRegister, CommandRegisterBuilder};
 
 use crate::capability::CapabilityIterator;
 use bit_field::BitField;
@@ -212,6 +212,17 @@ impl EndpointHeader {
     pub fn status(&self, access: &impl ConfigRegionAccess) -> StatusRegister {
         let data = unsafe { access.read(self.0, 0x4).get_bits(16..32) };
         StatusRegister::new(data as u16)
+    }
+
+    pub fn command(&self, access: &impl ConfigRegionAccess) -> CommandRegister {
+        let data = unsafe { access.read(self.0, 0x4).get_bits(0..16) };
+        CommandRegister::from_u16(data as u16)
+    }
+
+    pub fn set_command(&self, register: CommandRegister, access: &impl ConfigRegionAccess) {
+        let mut data = unsafe { access.read(self.0, 0x4) };
+        register.write_info(&mut data);
+        unsafe { access.write(self.0, 0x4, data) };
     }
 
     pub fn header(&self) -> PciHeader {
