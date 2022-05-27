@@ -239,21 +239,21 @@ pub struct CommandRegisterBuilder(u16);
 impl CommandRegisterBuilder {
     /// If `true` the assertion of the devices INTx# signal is disabled;
     /// otherwise, assertion of the signal is enabled.
-    pub fn interrupt_disable(&mut self, disable: bool) -> &mut CommandRegisterBuilder {
+    pub fn interrupt_disable<'a>(&'a mut self, disable: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(10, disable);
         self
     }
 
     /// If `true` indicates a device is allowed to generate fast back-to-back transactions;
     /// otherwise, fast back-to-back transactions are only allowed to the same agent.
-    pub fn fast_back_to_back_enable(&mut self, enable: bool) -> &mut CommandRegisterBuilder {
+    pub fn fast_back_to_back_enable<'a>(&'a mut self, enable: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(9, enable);
         self
     }
 
     /// If `true` the SERR# driver is enabled;
     /// otherwise, the driver is disabled.
-    pub fn serr_enable(&mut self, enable: bool) -> &mut CommandRegisterBuilder {
+    pub fn serr_enable<'a>(&'a mut self, enable: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(8, enable);
         self
     }
@@ -262,52 +262,52 @@ impl CommandRegisterBuilder {
     /// otherwise, when an error is detected, the device will set bit 15 of the Status register
     /// (Detected Parity Error Status Bit), but will not assert the PERR# (Parity Error)
     /// pin and will continue operation as normal.
-    pub fn parity_error_response(&mut self, response: bool) -> &mut CommandRegisterBuilder {
+    pub fn parity_error_response<'a>(&'a mut self, response: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(6, response);
         self
     }
 
     /// If `true` the device does not respond to palette register writes and will snoop the data;
     /// otherwise, the device will treat palette write accesses like all other accesses.
-    pub fn vga_palette_snoop(&mut self, snoop: bool) -> &mut CommandRegisterBuilder {
+    pub fn vga_palette_snoop<'a>(&'a mut self, snoop: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(5, snoop);
         self
     }
 
     /// If `true` the device can generate the Memory Write and Invalidate command;
     /// otherwise, the Memory Write command must be used.
-    pub fn memory_write_and_invalidate_enable(
-        &mut self,
+    pub fn memory_write_and_invalidate_enable<'a>(
+        &'a mut self,
         enable: bool,
-    ) -> &mut CommandRegisterBuilder {
+    ) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(4, enable);
         self
     }
 
     /// If `true` the device can monitor Special Cycle operations;
     /// otherwise, the device will ignore them.
-    pub fn monitor_special_cycles(&mut self, cycles: bool) -> &mut CommandRegisterBuilder {
+    pub fn monitor_special_cycles<'a>(&'a mut self, cycles: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(3, cycles);
         self
     }
 
     /// If `true` the device can behave as a bus master;
     /// otherwise, the device can not generate PCI accesses.
-    pub fn bus_mastering(&mut self, mastering: bool) -> &mut CommandRegisterBuilder {
+    pub fn bus_mastering<'a>(&'a mut self, mastering: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(2, mastering);
         self
     }
 
     /// If `true` the device can respond to Memory Space accesses;
     /// otherwise, the device's response is disabled.
-    pub fn memory_space_access(&mut self, access: bool) -> &mut CommandRegisterBuilder {
+    pub fn memory_space_access<'a>(&'a mut self, access: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(1, access);
         self
     }
 
     /// If `true` the device can respond to I/O Space accesses;
     /// otherwise, the device's response is disabled.
-    pub fn io_space_access(&mut self, access: bool) -> &mut CommandRegisterBuilder {
+    pub fn io_space_access<'a>(&'a mut self, access: bool) -> &'a mut CommandRegisterBuilder {
         self.0.set_bit(0, access);
         self
     }
