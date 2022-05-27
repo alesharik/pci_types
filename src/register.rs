@@ -312,7 +312,7 @@ impl CommandRegisterBuilder {
         self
     }
 
-    pub fn build(self) -> CommandRegister {
+    pub fn build(&self) -> CommandRegister {
         CommandRegister(self.0)
     }
 }
